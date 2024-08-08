@@ -1,0 +1,6 @@
+fastapi
+pydantic
+requests
+pytest
+pytest-mock
+fastapi-testclient
