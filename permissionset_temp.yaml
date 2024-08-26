@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Resources:
-  CodePipelineRole2:
+  CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: CodePipelineRole2
@@ -12,7 +12,7 @@ Resources:
               Service: codepipeline.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: CodePipelinePolicy2
+        - PolicyName: CodePipelinePolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -57,7 +57,7 @@ Resources:
                   - route53:DeleteHealthCheck
                 Resource: "*"
 
-  CodeBuildRole2:
+  CodeBuildRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: CodeBuildRole2
@@ -69,7 +69,7 @@ Resources:
               Service: codebuild.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: CodeBuildPolicy2
+        - PolicyName: CodeBuildPolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -94,9 +94,9 @@ Resources:
                 Resource: "*"
 
 Outputs:
-  CodePipelineRole2Arn:
+  CodePipelineRoleArn:
     Description: "ARN of the IAM role for CodePipeline"
-    Value: !GetAtt CodePipelineRole2.Arn
-  CodeBuildRole2Arn:
+    Value: !GetAtt CodePipelineRole.Arn
+  CodeBuildRoleArn:
     Description: "ARN of the IAM role for CodeBuild"
-    Value: !GetAtt CodeBuildRole2.Arn
+    Value: !GetAtt CodeBuildRole.Arn
