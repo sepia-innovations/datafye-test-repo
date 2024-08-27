@@ -25,6 +25,6 @@ phases:
 
 artifacts:
   files:
-    - '**/*'
+    - bin/Release/net6.0/**
   base-directory: bin/Release/net6.0
   discard-paths: no
