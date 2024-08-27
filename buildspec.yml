@@ -21,10 +21,13 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
+      - echo "Listing contents of bin/Release/net6.0:"
       - ls -R bin/Release/net6.0
+      - echo "Current directory:"
+      - pwd
 
 artifacts:
   files:
-    - bin/Release/net6.0/**
+    - '**/*'
   base-directory: bin/Release/net6.0
   discard-paths: no
