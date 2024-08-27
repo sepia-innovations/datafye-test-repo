@@ -21,9 +21,10 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
+      - ls -R bin/Release/net7.0
 
 artifacts:
   files:
     - '**/*'
-  discard-paths: yes
-  base-directory: .
+  base-directory: bin/Release/net7.0
+  discard-paths: no
