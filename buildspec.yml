@@ -1,0 +1,29 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing .NET Core...
+      - curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 7.0
+      - export PATH="$PATH:$HOME/.dotnet"
+      - dotnet --version
+  
+  pre_build:
+    commands:
+      - echo Restoring .NET Core dependencies...
+      - dotnet restore
+
+  build:
+    commands:
+      - echo Building the .NET Core application...
+      - dotnet build --configuration Release --no-restore
+  
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes
+  base-directory: .
