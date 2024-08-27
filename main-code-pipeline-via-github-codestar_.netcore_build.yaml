@@ -1,0 +1,277 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "AWS CloudFormation Template to build the ECR Build pipeline by taking code GitHub as source and ECR repo as destination"
+
+Parameters:
+  ProjectName:
+    Type: String
+    Description: "The name of the customer in lowercase to use as a prefix for the S3 bucket name."
+  FullRepositoryId:
+    Type: String
+    Description: Full repository id <GitHubOwner>/<GitHubRepoName>
+    Default: "sepia-innovations/datafye-test-repo"
+  BranchName:
+    Type: String
+    Description: Branch name
+    Default: "data"
+  ArtifactBucketName:
+    Type: String
+    Description: Name of the S3 bucket for storing CodePipeline artifacts
+    Default: "sepia-codepipe-common-artifact"
+  GitHubOwner:
+    Type: String
+    Description: "The owner of the GitHub repository."
+    Default: "sepia-innovations"
+  GitHubRepoName:
+    Type: String
+    Description: "The name of the GitHub repository."
+    Default: "datafye-test-repo"
+  GitHubOAuthToken:
+    Type: String
+    NoEcho: true
+    Description: "OAuth token for GitHub."
+Resources:
+  ctpipelineRole1:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+        Version: "2012-10-17"
+
+  ctpipelineRoleDefaultPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+              - s3:PutObject
+              - s3:PutObjectLegalHold
+              - s3:PutObjectRetention
+              - s3:PutObjectTagging
+              - s3:PutObjectVersionTagging
+              - s3:Abort*
+            Effect: Allow
+            Resource:
+              - !Sub "arn:aws:s3:::${ArtifactBucketName}"
+              - !Sub "arn:aws:s3:::${ArtifactBucketName}/*"
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Resource: !GetAtt "ctpipelineSourceCodePipelineActionRole.Arn"
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Resource: !GetAtt "ctpipelineBuildCodePipelineActionRole.Arn"
+          - Action: codebuild:StartBuild
+            Effect: Allow
+            Resource: !Sub "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${ProjectName}"
+          - Action: codebuild:BatchGetBuilds
+            Effect: Allow
+            Resource: !Sub "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${ProjectName}"
+        Version: "2012-10-17"
+      PolicyName: ctpipelineRoleDefaultPolicy
+      Roles:
+        - !Ref "ctpipelineRole1"
+
+  ctpipelineA:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !GetAtt "ctpipelineRole1.Arn"
+      Stages:
+        - Actions:
+            - ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: '1'
+              Configuration:
+                Owner: !Ref GitHubOwner
+                Repo: !Ref GitHubRepoName
+                Branch: !Ref BranchName
+                OAuthToken: !Ref GitHubOAuthToken
+              Name: GitHub_Source
+              OutputArtifacts:
+                - Name: Artifact_Source_Source
+              RunOrder: 1
+          Name: Source
+        - Actions:
+            - ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: "1"
+              Configuration:
+                ProjectName: !Ref "buildproject1"
+              InputArtifacts:
+                - Name: Artifact_Source_Source
+              Name: Build
+              OutputArtifacts:
+                - Name: Artifact_Build_Build
+              RunOrder: 1
+          Name: Build
+      ArtifactStore:
+        Location: !Ref ArtifactBucketName
+        Type: S3
+      Name: !Sub '${ProjectName}-infra-pipeline'
+      RestartExecutionOnUpdate: true
+    DependsOn:
+      - ctpipelineRoleDefaultPolicy
+      - ctpipelineRole1
+
+  ctpipelineSourceCodePipelineActionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+        Version: "2012-10-17"
+
+  ctpipelineSourceCodePipelineActionRoleDefaultPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: 
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+              - s3:PutObject
+              - s3:PutObjectLegalHold
+              - s3:PutObjectRetention
+              - s3:PutObjectTagging
+              - s3:PutObjectVersionTagging
+              - s3:Abort*
+            Effect: Allow
+            Resource:         
+              - !Sub "arn:aws:s3:::${ArtifactBucketName}"
+              - !Sub "arn:aws:s3:::${ArtifactBucketName}/*"
+          - Action:
+              - s3:PutObjectAcl*
+              - s3:PutObjectVersionAcl
+            Effect: Allow
+            Resource:         
+              - !Sub "arn:aws:s3:::${ArtifactBucketName}/*"
+        Version: "2012-10-17"
+      PolicyName: ctpipelineSourceCodePipelineActionRoleDefaultPolicy
+      Roles:
+        - !Ref "ctpipelineSourceCodePipelineActionRole"
+
+  ctpipelineBuildCodePipelineActionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
+        Version: "2012-10-17"
+
+  ctpipelineBuildCodePipelineActionRoleDefaultPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - codebuild:BatchGetBuilds
+              - codebuild:StartBuild
+              - codebuild:StopBuild
+            Effect: Allow
+            Resource: !GetAtt "buildproject1.Arn"
+        Version: "2012-10-17"
+      PolicyName: ctpipelineBuildCodePipelineActionRoleDefaultPolicy
+      Roles:
+        - !Ref "ctpipelineBuildCodePipelineActionRole"
+
+  buildproRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+        Version: "2012-10-17"
+
+  buildproRoleDefaultPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Effect: Allow
+            Resource:
+              - !Sub "arn:${AWS::Partition}:logs:us-east-1:${AWS::AccountId}:log-group:/aws/codebuild/${buildproject1}"
+              - !Sub "arn:${AWS::Partition}:logs:us-east-1:${AWS::AccountId}:log-group:/aws/codebuild/${buildproject1}:*"
+          - Action:
+              - codebuild:CreateReportGroup
+              - codebuild:CreateReport
+              - codebuild:UpdateReport
+              - codebuild:BatchPutTestCases
+              - codebuild:BatchPutCodeCoverages
+            Effect: Allow
+            Resource: !Sub "arn:${AWS::Partition}:codebuild:us-east-1:${AWS::AccountId}:report-group/${buildproject1}-*"
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+              - s3:PutObject
+              - s3:PutObjectLegalHold
+              - s3:PutObjectRetention
+              - s3:PutObjectTagging
+              - s3:PutObjectVersionTagging
+              - s3:Abort*
+            Effect: Allow
+            Resource:
+              - !Sub "arn:aws:s3:::${ArtifactBucketName}"
+              - !Sub "arn:aws:s3:::${ArtifactBucketName}/*"
+          - Action:
+              - secretsmanager:Get*
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: buildproRoleDefaultPolicy
+      Roles:
+        - !Ref "buildproRole"
+
+  buildproject1:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:7.0
+        ImagePullCredentialsType: CODEBUILD
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: PROJECT_NAME
+            Value: !Ref ProjectName
+        Type: LINUX_CONTAINER
+      ServiceRole: !GetAtt "buildproRole.Arn"
+      Source:
+        BuildSpec: buildspec.yml
+        Type: CODEPIPELINE
+      Cache:
+        Type: NO_CACHE
+      EncryptionKey: alias/aws/s3
+      Name: !Ref ProjectName
+
+Outputs:
+  ECRImageURI:
+    Description: "Pipeline Arn"
+    Value: !Ref ctpipelineA
