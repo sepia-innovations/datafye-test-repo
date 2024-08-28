@@ -28,6 +28,9 @@ Parameters:
   CustomerAccountId:
     Type: String
     Description: "The AWS Account ID where the resources will be deployed."
+  CustomerAccountRoleName:
+    Type: String
+    Description: "The AWS Account Role Name by using this the resources will be deployed."
 Resources:
   ctpipelineRole1:
     Type: AWS::IAM::Role
@@ -261,7 +264,9 @@ Resources:
           - Name: PROJECT_NAME
             Value: !Ref ProjectName
           - Name: CUSTOMER_ACCOUNT_ID
-            Value: !Ref CustomerAccountId  # Add the TARGET_ACCOUNT_ID environment variable
+            Value: !Ref CustomerAccountId
+          - Name: CUSTOMER_ACCOUNT_ROLE_NAME
+            Value: !Ref CustomerAccountRoleName
         Type: LINUX_CONTAINER
       ServiceRole: !GetAtt "buildproRole.Arn"
       Source:
