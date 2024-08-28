@@ -5,10 +5,6 @@ Parameters:
   ProjectName:
     Type: String
     Description: "The name of the customer in lowercase to use as a prefix for the S3 bucket name."
-  FullRepositoryId:
-    Type: String
-    Description: Full repository id <GitHubOwner>/<GitHubRepoName>
-    Default: "sepia-innovations/datafye-test-repo"
   BranchName:
     Type: String
     Description: Branch name
