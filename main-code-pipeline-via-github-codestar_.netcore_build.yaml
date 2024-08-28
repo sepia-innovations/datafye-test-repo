@@ -25,7 +25,7 @@ Parameters:
     Type: String
     NoEcho: true
     Description: "OAuth token for GitHub."
-  TargetAccountId:
+  CustomerAccountId:
     Type: String
     Description: "The AWS Account ID where the resources will be deployed."
 Resources:
@@ -260,8 +260,8 @@ Resources:
         EnvironmentVariables:
           - Name: PROJECT_NAME
             Value: !Ref ProjectName
-          - Name: TARGET_ACCOUNT_ID
-            Value: !Ref TargetAccountId  # Add the TARGET_ACCOUNT_ID environment variable
+          - Name: CUSTOMER_ACCOUNT_ID
+            Value: !Ref CustomerAccountId  # Add the TARGET_ACCOUNT_ID environment variable
         Type: LINUX_CONTAINER
       ServiceRole: !GetAtt "buildproRole.Arn"
       Source:
