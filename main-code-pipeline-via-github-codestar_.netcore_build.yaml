@@ -255,6 +255,9 @@ Resources:
               - secretsmanager:Get*
             Effect: Allow
             Resource: "*"
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Resource: !Sub "arn:aws:iam::${CustomerAccountId}:role/${CustomerAccountRoleName}"
         Version: "2012-10-17"
       PolicyName: buildproRoleDefaultPolicy
       Roles:
