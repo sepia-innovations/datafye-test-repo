@@ -30,7 +30,17 @@ Parameters:
     Description: "The AWS Account ID where the resources will be deployed."
   CustomerAccountRoleName:
     Type: String
-    Description: "The AWS Account Role Name by using this the resources will be deployed."
+    Description: "The name of the IAM role in the AWS account used to deploy the resources."
+  TerraformModulePath:
+    Type: String
+    Description: "The path to the Terraform module that will be used for deployment."
+  TerraformDyanamoTableName:
+    Type: String
+    Description: "The name of the DynamoDB table used for Terraform state locking and consistency."
+  TerraformS3StateFile:
+    Type: String
+    Description: "The S3 path where the Terraform state file will be stored."
+    
 Resources:
   ctpipelineRole1:
     Type: AWS::IAM::Role
@@ -267,6 +277,12 @@ Resources:
             Value: !Ref CustomerAccountId
           - Name: CUSTOMER_ACCOUNT_ROLE_NAME
             Value: !Ref CustomerAccountRoleName
+          - Name: MODULE_PATH
+            Value: !Ref TerraformModulePath
+          - Name: DYNAMODB_TABLE_NAME
+            Value: !Ref TerraformDyanamoTableName
+          - Name: S3_STATE_FILE
+            Value: !Ref TerraformS3StateFile
         Type: LINUX_CONTAINER
       ServiceRole: !GetAtt "buildproRole.Arn"
       Source:
