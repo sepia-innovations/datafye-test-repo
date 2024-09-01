@@ -264,6 +264,28 @@ Resources:
           - Action: sts:AssumeRole
             Effect: Allow
             Resource: !Sub "arn:aws:iam::${CustomerAccountId}:role/${CustomerAccountRoleName}"
+          - Action:
+              - s3:ListBucket
+              - s3:GetObject
+              - s3:PutObject
+              - s3:DeleteObject
+            Effect: Allow
+            Resource:
+              - !Sub "arn:aws:s3:::${TerraformS3BucketName}"
+              - !Sub "arn:aws:s3:::${TerraformS3BucketName}/*"
+          - Action:
+              - dynamodb:PutItem
+              - dynamodb:GetItem
+              - dynamodb:DeleteItem
+              - dynamodb:UpdateItem
+            Effect: Allow
+            Resource:
+              - !Sub "arn:aws:dynamodb:us-east-1:${AWS::AccountId}:table/${TerraformDyanamoTableName}"
+          - Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey
+            Effect: Allow
+            Resource: "*"
         Version: "2012-10-17"
       PolicyName: buildproRoleDefaultPolicy
       Roles:
