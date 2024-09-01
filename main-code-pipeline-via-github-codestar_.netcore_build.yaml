@@ -37,9 +37,15 @@ Parameters:
   TerraformDyanamoTableName:
     Type: String
     Description: "The name of the DynamoDB table used for Terraform state locking and consistency."
+  TerraformS3BucketName:
+    Type: String
+    Description: "The S3 bucket where the Terraform state file will be stored."
   TerraformS3StateFile:
     Type: String
     Description: "The S3 path where the Terraform state file will be stored."
+  AwsRegion:
+    Type: String
+    Description: "The AWS region for the Terraform backend."
     
 Resources:
   ctpipelineRole1:
@@ -284,8 +290,12 @@ Resources:
             Value: !Ref TerraformModulePath
           - Name: DYNAMODB_TABLE_NAME
             Value: !Ref TerraformDyanamoTableName
+          - Name: S3_BUCKET_NAME
+            Value: !Ref TerraformS3BucketName
           - Name: S3_STATE_FILE
             Value: !Ref TerraformS3StateFile
+          - Name: AWS_REGION
+            Value: !Ref AwsRegion
         Type: LINUX_CONTAINER
       ServiceRole: !GetAtt "buildproRole.Arn"
       Source:
