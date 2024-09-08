@@ -112,7 +112,6 @@ Resources:
                 Repo: !Ref GitHubRepoName
                 Branch: !Ref BranchName
                 OAuthToken: !Ref GitHubOAuthToken
-                PollForSourceChanges: false
               Name: GitHub_Source
               OutputArtifacts:
                 - Name: Artifact_Source_Source
