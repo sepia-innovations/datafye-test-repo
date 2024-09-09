@@ -31,9 +31,6 @@ Parameters:
   CustomerAccountRoleName:
     Type: String
     Description: "The name of the IAM role in the AWS account used to deploy the resources."
-  TerraformModulePath:
-    Type: String
-    Description: "The path to the Terraform module that will be used for deployment."
   TerraformDyanamoTableName:
     Type: String
     Description: "The name of the DynamoDB table used for Terraform state locking and consistency."
@@ -302,14 +299,10 @@ Resources:
         ImagePullCredentialsType: CODEBUILD
         PrivilegedMode: true
         EnvironmentVariables:
-          - Name: PROJECT_NAME
-            Value: !Ref ProjectName
           - Name: CUSTOMER_ACCOUNT_ID
             Value: !Ref CustomerAccountId
           - Name: CUSTOMER_ACCOUNT_ROLE_NAME
             Value: !Ref CustomerAccountRoleName
-          - Name: MODULE_PATH
-            Value: !Ref TerraformModulePath
           - Name: DYNAMODB_TABLE_NAME
             Value: !Ref TerraformDyanamoTableName
           - Name: S3_BUCKET_NAME
