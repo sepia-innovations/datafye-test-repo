@@ -25,6 +25,10 @@ Parameters:
     Type: String
     NoEcho: true
     Description: "OAuth token for GitHub."
+  GitHubSecretName:
+    Type: String
+    NoEcho: true
+    Description: "Secret Name for GitHub."
   CustomerAccountId:
     Type: String
     Description: "The AWS Account ID where the resources will be deployed."
@@ -311,6 +315,8 @@ Resources:
             Value: !Ref TerraformS3StateFile
           - Name: AWS_REGION
             Value: !Ref AwsRegion
+          - Name: GITHUB_SECRET_NAME
+            Value: !Ref GitHubSecretName
         Type: LINUX_CONTAINER
       ServiceRole: !GetAtt "buildproRole.Arn"
       Source:
