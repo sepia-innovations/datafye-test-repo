@@ -35,7 +35,7 @@ Parameters:
   CustomerAccountRoleName:
     Type: String
     Description: "The name of the IAM role in the AWS account used to deploy the resources."
-  TerraformDyanamoTableName:
+  TerraformDynamoTableName:
     Type: String
     Description: "The name of the DynamoDB table used for Terraform state locking and consistency."
   TerraformS3BucketName:
@@ -308,7 +308,7 @@ Resources:
           - Name: CUSTOMER_ACCOUNT_ROLE_NAME
             Value: !Ref CustomerAccountRoleName
           - Name: DYNAMODB_TABLE_NAME
-            Value: !Ref TerraformDyanamoTableName
+            Value: !Ref TerraformDynamoTableName
           - Name: S3_BUCKET_NAME
             Value: !Ref TerraformS3BucketName
           - Name: S3_STATE_FILE
