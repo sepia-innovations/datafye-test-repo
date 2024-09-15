@@ -2,6 +2,9 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "AWS CloudFormation Template to build the ECR Build pipeline by taking code GitHub as source and ECR repo as destination"
 
 Parameters:
+  PipelineName:
+    Type: String
+    Description: "The name of the pipeline"
   ProjectName:
     Type: String
     Description: "The name of the customer in lowercase to use as a prefix for the S3 bucket name."
@@ -136,7 +139,7 @@ Resources:
       ArtifactStore:
         Location: !Ref ArtifactBucketName
         Type: S3
-      Name: !Sub '${ProjectName}-infra-pipeline'
+      Name: !Sub '${PipelineName}'
       RestartExecutionOnUpdate: true
     DependsOn:
       - ctpipelineRoleDefaultPolicy
