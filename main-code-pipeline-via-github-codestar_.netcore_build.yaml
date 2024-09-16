@@ -7,23 +7,19 @@ Parameters:
     Description: "The name of the pipeline"
   ProjectName:
     Type: String
-    Description: "The name of the customer in lowercase to use as a prefix for the S3 bucket name."
+    Description: "The name of the project name in lowercase to use as a prefix for the S3 bucket name."
   BranchName:
     Type: String
     Description: Branch name
-    Default: "data"
   ArtifactBucketName:
     Type: String
     Description: Name of the S3 bucket for storing CodePipeline artifacts
-    Default: "sepia-codepipe-common-artifact"
   GitHubOwner:
     Type: String
     Description: "The owner of the GitHub repository."
-    Default: "sepia-innovations"
   GitHubRepoName:
     Type: String
     Description: "The name of the GitHub repository."
-    Default: "datafye-test-repo"
   GitHubOAuthToken:
     Type: String
     NoEcho: true
