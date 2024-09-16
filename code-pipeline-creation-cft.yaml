@@ -43,9 +43,12 @@ Parameters:
   TerraformS3StateFile:
     Type: String
     Description: "The S3 path where the Terraform state file will be stored."
-  AwsRegion:
+  TerraformBackendRegion:
     Type: String
     Description: "The AWS region for the Terraform backend."
+  TerraformRegion:
+    Type: String
+    Description: "The AWS region where the Terraform will apply."
     
 Resources:
   ctpipelineRole1:
@@ -312,8 +315,10 @@ Resources:
             Value: !Ref TerraformS3BucketName
           - Name: S3_STATE_FILE
             Value: !Ref TerraformS3StateFile
-          - Name: AWS_REGION
-            Value: !Ref AwsRegion
+          - Name: TERRAFORM_BACKEND_REGION
+            Value: !Ref TerraformBackendRegion
+          - Name: TERRAFORM_REGION
+            Value: !Ref TerraformRegion
           - Name: GITHUB_SECRET_NAME
             Value: !Ref GitHubSecretName
           - Name: GITHUB_CUSTOMER_REPO
