@@ -320,6 +320,8 @@ Resources:
             Value: !Ref AwsRegion
           - Name: GITHUB_SECRET_NAME
             Value: !Ref GitHubSecretName
+          - Name: GITHUB_CUSTOMER_REPO
+            Value: !Ref GitHubRepoName
         Type: LINUX_CONTAINER
       ServiceRole: !GetAtt "buildproRole.Arn"
       Source:
