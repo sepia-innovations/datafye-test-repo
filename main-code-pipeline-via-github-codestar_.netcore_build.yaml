@@ -284,7 +284,7 @@ Resources:
               - dynamodb:UpdateItem
             Effect: Allow
             Resource:
-              - !Sub "arn:aws:dynamodb:us-east-1:${AWS::AccountId}:table/${TerraformDyanamoTableName}"
+              - !Sub "arn:aws:dynamodb:us-east-1:${AWS::AccountId}:table/${TerraformDynamoTableName}"
           - Action:
               - kms:Decrypt
               - kms:GenerateDataKey
